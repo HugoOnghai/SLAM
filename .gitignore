@@ -1,0 +1,24 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# data (DO NOT SUBMIT)
+data/train/
+data/test/
+
+# outputs
+outputs/
+
+# environments
+.venv/
+.env/
+
+# misc
+.DS_Store
