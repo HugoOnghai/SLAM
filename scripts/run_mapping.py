@@ -6,7 +6,7 @@ from slam_project.localization import odometry as od
 
 lidar = ld.get_lidar('./data/train/Hokuyo20')
 
-X, Y, theta, timestamps = od.parse_encoders('./data/train/Encoders20')
+X, Y, theta, timestamps = od.parse_encoders_IMU('./data/train/Encoders20', './data/train/imu20')
 
 fig, ax = plt.subplots(1,1,figsize=(10,10))
 

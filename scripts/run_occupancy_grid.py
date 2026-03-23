@@ -5,11 +5,17 @@ from slam_project.io import load_data as ld
 import matplotlib.pyplot as plt
 from slam_project.visualization import animations as anim
 
-WORLD_BOUNDS = (-10, 10)  # meters
+WORLD_BOUNDS = (-5, 40)  # meters
 SCALE = 0.1  # meters per box
 SCAN_IDX = 0
 
-X, Y, theta, t = od.parse_encoders('./data/train/Encoders20')
+X, Y, theta, t = od.parse_encoders_IMU('./data/train/Encoders20', './data/train/imu20')
 lidar = ld.get_lidar('./data/train/Hokuyo20')
 
-anim.animate_occupancy_grid(lidar[0:1], X, Y, theta, t)
+# grid = occupancy_grid(0, 0, SCALE, WORLD_BOUNDS)
+# i = mp.nearest_pose_index(lidar[0]['t'], t)
+# ox, oy = mp.lidar_hits_global(lidar[0], X[i], Y[i], theta[i])
+# grid.add_scan_hits(ox, oy, X[i], Y[i], runBresenham=True)
+# grid.plot()
+
+anim.animate_occupancy_grid(lidar, X, Y, theta, t, scale=0.1, world_bounds=WORLD_BOUNDS)

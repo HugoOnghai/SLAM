@@ -43,14 +43,11 @@ class occupancy_grid:
         ox_grid = ox_grid[valid_hits]
         oy_grid = oy_grid[valid_hits]
 
-        if runBresenham:
-            for (ox_gridpoint, oy_gridpoint) in zip(ox_grid, oy_grid):
-                line_coords = bresenham(robot_x_grid, robot_y_grid, ox_gridpoint, oy_gridpoint)
-                cols = [coords[0] for coords in line_coords]
-                rows = [coords[1] for coords in line_coords]
-                self.grid[rows, cols] = 0 # line to wall should be free space
+        if runBresenham and ox_grid.size:
+            cols, rows = bresenham(robot_x_grid, robot_y_grid, ox_grid, oy_grid)
+            self.grid[rows, cols] -= 0.1 # line to wall should be free space
 
-        self.grid[oy_grid, ox_grid] = 1
+        self.grid[oy_grid, ox_grid] += 0.5
 
         return ox_grid, oy_grid, robot_x_grid, robot_y_grid
 
@@ -61,19 +58,26 @@ def bresenham(x0, y0, x1, y1):
     Don't use this anymore, try using the maputils cython one now
     """
 
-    # instead, we call the cython optimized implementation and cast it to our expected output
-    # i.e. we do array of size (P,2) into an array of P tuples.
-    ray =  mu.getMapCellsFromRay_fclad(
-        x0.astype(np.int16),
-        y0.astype(np.int16),
-        x1.astype(np.int16),
-        y1.astype(np.int16),
-        400
+    xends = np.ascontiguousarray(np.atleast_1d(x1), dtype=np.int16)
+    yends = np.ascontiguousarray(np.atleast_1d(y1), dtype=np.int16)
+
+    if xends.shape != yends.shape:
+        raise ValueError("x1 and y1 must have matching shapes")
+
+    if xends.size == 0:
+        empty = np.empty(0, dtype=np.intp)
+        return empty, empty
+
+    max_map = int(max(x0, y0, np.max(xends), np.max(yends))) + 1
+    ray = mu.getMapCellsFromRay_fclad(
+        int(x0),
+        int(y0),
+        xends,
+        yends,
+        max_map,
     )
 
-    line_coords = [tuple(row) for row in ray]
-
-    return line_coords
+    return ray[0].astype(np.intp, copy=False), ray[1].astype(np.intp, copy=False)
 
 
     # # assumes that x0,y0,x1,y1 are all grid points and therefore integers.

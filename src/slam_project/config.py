@@ -4,16 +4,12 @@ MAP_SIZE = 100
 NUM_PARTICLES = 100
 RESAMPLE_THRESHOLD = 0.5
 
-LIDAR_MIN_RANGE = 0.1
+LIDAR_MIN_RANGE = 1
 LIDAR_MAX_RANGE = 30.0
-
-LOG_ODDS_OCC = 1.0
-LOG_ODDS_FREE = -0.5
-LOG_ODDS_CLIP = 5.0
 
 # ROBOT DIMENSIONS
 # BODY_WIDTH = 311.15 # mm
-BODY_WIDTH = 500 # trying to give some "fudge factor"
+BODY_WIDTH = 600 # trying to give some "fudge factor"
 BODY_LENGTH = 463.55 # mm (from bumper to bumper)
 OVERALL_WIDTH = 476.25 # mm (including wheels)
 OVERALL_LENGTH = 584.20 # mm

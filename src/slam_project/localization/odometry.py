@@ -21,18 +21,25 @@ def wheel2deltaOXY(s_L, s_R, angle, deltaAngle, enc_ts):
 
     return deltaX, deltaY
 
-def parse_encoders(encoder_path):
+def parse_encoders_IMU(encoder_path, IMU_path):
     '''
     computes global X and Y and theta
     '''
     FL, FR, RL, RR, enc_ts = ld.get_encoder(encoder_path)
+    acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z, imu_ts = ld.get_imu(IMU_path)
 
     FL = kalman_filter(FL)
     FR = kalman_filter(FR)
     RL = kalman_filter(RL)
     RR = kalman_filter(RR)
-    enc_ts = kalman_filter(enc_ts)
 
+    acc_x = kalman_filter(acc_x)
+    acc_y = kalman_filter(acc_y)
+    acc_z = kalman_filter(acc_z)
+    gyro_x = kalman_filter(gyro_x)
+    gyro_y = kalman_filter(gyro_y)
+    gyro_z = kalman_filter(gyro_z)
+    
     # convert per-wheel encoder ticks to per-side encoder ticks
     # currently I just only consider the front wheels
     e_L = (FL + RL)/2
@@ -48,15 +55,23 @@ def parse_encoders(encoder_path):
     w = config.BODY_WIDTH # mm
 
     # calculate angular odometry
-    deltaTheta = (s_R-s_L)/(w) # unitless becomes radians turned at each given time step
+    deltaTheta_enc = (s_R-s_L)/(w) # unitless becomes radians turned at each given time step
 
     # integrate deltaTheta to get global rotation
-    theta = od.integrate(0, deltaTheta)
+    theta_enc = od.integrate(0, deltaTheta_enc)
+
+    ### INCORPORATE IMU DATA
+    dt_imu = np.diff(imu_ts, prepend=imu_ts[0])
+    deltaTheta_imu = gyro_z * dt_imu
+    theta_imu = integrate(0, deltaTheta_imu)
+    theta_imu_on_enc = np.interp(enc_ts, imu_ts, theta_imu)
 
     # convert encoder ticks to deltaX and deltaY in each time interval
     # I saw in literature that people called the inertial frame of reference OXY
     # origin-x-y axes
-    deltaX, deltaY = od.wheel2deltaOXY(s_L, s_R, theta, deltaTheta, enc_ts)
+    alpha = 0.50
+    theta_fused = alpha * theta_imu_on_enc + (1 - alpha) * theta_enc
+    deltaX, deltaY = od.wheel2deltaOXY(s_L, s_R, theta_fused, deltaTheta_enc, enc_ts)
 
     # convert position deltas to positions with integration 
     X = od.integrate(0, deltaX)
@@ -66,7 +81,7 @@ def parse_encoders(encoder_path):
     X /= 1000
     Y /= 1000
 
-    return X, Y, theta, enc_ts
+    return X, Y, theta_fused, enc_ts
 
 # MY KALMAN FILTER FROM PROJECT 2
 def kalman_filter(raw, Q=1e-5, R=1e-2):
