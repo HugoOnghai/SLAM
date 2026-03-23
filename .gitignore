@@ -13,9 +13,6 @@ wheels/
 data/train/
 data/test/
 
-# outputs
-outputs/
-
 # environments
 .venv/
 .env/

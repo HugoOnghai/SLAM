@@ -27,8 +27,8 @@ class occupancy_grid:
         dx = ox - self.origin_x
         dy = oy - self.origin_y
 
-        origin_x_grid = np.floor(self.GRID_DIM / 2).astype(int)
-        origin_y_grid = np.floor(self.GRID_DIM / 2).astype(int)
+        origin_x_grid = ((np.abs(self.origin_x - self.WORLD_DIM[0])/np.abs(self.WORLD_DIM[1]-self.WORLD_DIM[0]))*self.GRID_DIM).astype(int)
+        origin_y_grid = ((np.abs(self.origin_y - self.WORLD_DIM[0])/np.abs(self.WORLD_DIM[1]-self.WORLD_DIM[0]))*self.GRID_DIM).astype(int)
         robot_x_grid = np.floor((robot_x - self.origin_x) / self.scale).astype(int) + origin_x_grid
         robot_y_grid = np.floor((robot_y - self.origin_y) / self.scale).astype(int) + origin_y_grid
         ox_grid = np.floor(dx / self.scale).astype(int) + origin_x_grid

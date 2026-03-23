@@ -62,10 +62,9 @@ def global_lidar_timelapse(fig, ax, lidar, X, Y, theta, theta_timestamps):
         plt.draw()
         plt.pause(0.005)
 
-def animate_occupancy_grid(lidar, X, Y, theta, t, scale=0.1, world_bounds=(-20, 20)):
+def animate_occupancy_grid(fig, ax, lidar, X, Y, theta, t, scale=0.1, world_bounds=(-20, 20)):
     grid = occupancy_grid(0, 0, scale, world_bounds)
-
-    fig, ax = plt.subplots(figsize=(8, 8))
+    
     image = ax.imshow(grid.grid, origin="lower", vmin=0, vmax=1)
     plt.colorbar(image, ax=ax)
 

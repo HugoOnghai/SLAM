@@ -11,4 +11,5 @@ X, Y, theta, timestamps = od.parse_encoders_IMU('./data/train/Encoders20', './da
 fig, ax = plt.subplots(1,1,figsize=(10,10))
 
 anim.global_lidar_timelapse(fig, ax, lidar, X, Y, theta, timestamps)
-anim.topdown_trajectory(ax, X, Y)
+
+fig.savefig("./outputs/figures/lidar+deadreckoning_nonSLAM.png")
