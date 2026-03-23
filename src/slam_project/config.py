@@ -12,7 +12,9 @@ LOG_ODDS_FREE = -0.5
 LOG_ODDS_CLIP = 5.0
 
 # ROBOT DIMENSIONS
-BODY_WIDTH = 311.15 # mm
+# BODY_WIDTH = 311.15 # mm
+BODY_WIDTH = 500 # trying to give some "fudge factor"
 BODY_LENGTH = 463.55 # mm (from bumper to bumper)
 OVERALL_WIDTH = 476.25 # mm (including wheels)
 OVERALL_LENGTH = 584.20 # mm
+WHEEL_DIAMETER = 254 # mm

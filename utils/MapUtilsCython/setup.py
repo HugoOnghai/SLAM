@@ -5,6 +5,6 @@ from Cython.Build import cythonize
 
 setup(
         name = "MapUtils",
-        ext_modules = cythonize("MapUtils_fclad.pyx", annotate=False)
+        ext_modules = cythonize("./utils/MapUtilsCython/MapUtils_fclad.pyx", annotate=False)
     )
 

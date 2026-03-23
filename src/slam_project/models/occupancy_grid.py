@@ -1,0 +1,108 @@
+import numpy as np
+import matplotlib.pyplot as plt
+import MapUtils_fclad as mu
+
+class occupancy_grid:
+
+    # def __init__(self, GRID_DIM):
+    #     self.grid = np.ones([GRID_DIM, GRID_DIM]) * 0.5
+
+    def __init__(self, origin_x, origin_y, scale, WORLD_DIM):
+        self.origin_x = origin_x # middle
+        self.origin_y = origin_y # middle
+        self.scale = scale # meters per box
+        self.WORLD_DIM = WORLD_DIM # meters
+        self.GRID_DIM = int(np.abs(self.WORLD_DIM[1] - self.WORLD_DIM[0])/self.scale) # boxes along axis
+        self.grid = np.ones([self.GRID_DIM, self.GRID_DIM]) * 0.5
+
+    def plot(self):
+        plt.imshow(self.grid, origin="lower")
+        plt.colorbar()
+        plt.show()
+    
+    def add_scan_hits(self, ox, oy, robot_x, robot_y, runBresenham=True):
+        ox = np.asarray(ox)
+        oy = np.asarray(oy)
+
+        dx = ox - self.origin_x
+        dy = oy - self.origin_y
+
+        origin_x_grid = np.floor(self.GRID_DIM / 2).astype(int)
+        origin_y_grid = np.floor(self.GRID_DIM / 2).astype(int)
+        robot_x_grid = np.floor((robot_x - self.origin_x) / self.scale).astype(int) + origin_x_grid
+        robot_y_grid = np.floor((robot_y - self.origin_y) / self.scale).astype(int) + origin_y_grid
+        ox_grid = np.floor(dx / self.scale).astype(int) + origin_x_grid
+        oy_grid = np.floor(dy / self.scale).astype(int) + origin_y_grid
+
+
+        valid_hits = (
+            (ox_grid >= 0) & (ox_grid < self.GRID_DIM) &
+            (oy_grid >= 0) & (oy_grid < self.GRID_DIM)
+        )
+
+        ox_grid = ox_grid[valid_hits]
+        oy_grid = oy_grid[valid_hits]
+
+        if runBresenham:
+            for (ox_gridpoint, oy_gridpoint) in zip(ox_grid, oy_grid):
+                line_coords = bresenham(robot_x_grid, robot_y_grid, ox_gridpoint, oy_gridpoint)
+                cols = [coords[0] for coords in line_coords]
+                rows = [coords[1] for coords in line_coords]
+                self.grid[rows, cols] = 0 # line to wall should be free space
+
+        self.grid[oy_grid, ox_grid] = 1
+
+        return ox_grid, oy_grid, robot_x_grid, robot_y_grid
+
+def bresenham(x0, y0, x1, y1):
+    """
+    Given two grid cells, find the best straight line approximation btwn them
+    source: https://github.com/encukou/bresenham/blob/master/bresenham.py
+    Don't use this anymore, try using the maputils cython one now
+    """
+
+    # instead, we call the cython optimized implementation and cast it to our expected output
+    # i.e. we do array of size (P,2) into an array of P tuples.
+    ray =  mu.getMapCellsFromRay_fclad(
+        x0.astype(np.int16),
+        y0.astype(np.int16),
+        x1.astype(np.int16),
+        y1.astype(np.int16),
+        400
+    )
+
+    line_coords = [tuple(row) for row in ray]
+
+    return line_coords
+
+
+    # # assumes that x0,y0,x1,y1 are all grid points and therefore integers.
+
+    # dx = x1 - x0
+    # dy = y1 - y0
+
+    # xsign = 1 if dx > 0 else -1
+    # ysign = 1 if dy > 0 else -1
+
+    # dx = np.abs(dx)
+    # dy = np.abs(dy)
+
+    # if dx > dy:
+    #     xx, xy, yx, yy = xsign, 0, 0, ysign
+    # else:
+    #     dx, dy = dy, dx
+    #     xx, xy, yx, yy = 0, ysign, xsign, 0
+
+    # D = 2*dy - dx # error term move straight or diagonally?
+    # y = 0
+
+    # line_coords = []
+
+    # for x in range(dx + 1):
+    #     line_coords.append((x0 + x*xx + y*yx, y0 + x*xy + y*yy))
+    #     if D >= 0: # increment y if error is larger along y than x
+    #         y += 1
+    #         D -= 2*dx
+    #     D += 2*dy
+
+    # return line_coords
