@@ -9,7 +9,7 @@ LIDAR_MAX_RANGE = 30.0
 
 # ROBOT DIMENSIONS
 # BODY_WIDTH = 311.15 # mm
-BODY_WIDTH = 600 # trying to give some "fudge factor"
+BODY_WIDTH = 311.15 # trying to give some "fudge factor"
 BODY_LENGTH = 463.55 # mm (from bumper to bumper)
 OVERALL_WIDTH = 476.25 # mm (including wheels)
 OVERALL_LENGTH = 584.20 # mm

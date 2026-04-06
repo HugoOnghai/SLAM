@@ -9,13 +9,19 @@ fig, ax = plt.subplots(1,1, figsize=(10,10))
 
 encodermats = [
     './data/train/Encoders20',
-    # './data/train/Encoders21',
-    # './data/train/Encoders23'
+    './data/train/Encoders21',
+    './data/train/Encoders23'
 ]
 
-for path in encodermats:
+imumats = [
+    './data/train/imu20',
+    './data/train/imu21',
+    './data/train/imu23'
+]
+
+for (path_enc, path_imu) in zip(encodermats, imumats):
     # load encoder data
-    X, Y, theta, ts = od.parse_encoders(path)
+    X, Y, theta, ts = od.parse_encoders_IMU(path_enc, path_imu)
 
     anim.topdown_trajectory(ax, X, Y)
 

@@ -83,7 +83,7 @@ def parse_encoders_IMU(encoder_path, IMU_path):
 
     return X, Y, theta_fused, enc_ts
 
-def compute_body_frame_odometry_at_lidar_times(encoder_path, imu_path, lidar_path, alpha=0.5):
+def compute_body_frame_odometry_at_lidar_times(encoder_path, imu_path, lidar_path):
     '''
     This function is the backbone of my particle filter odometry step. It computes...
     - the deltaX, deltaY, and deltaTheta between each timestep of the lidar scan.
@@ -120,16 +120,12 @@ def compute_body_frame_odometry_at_lidar_times(encoder_path, imu_path, lidar_pat
 
     ## ROTATION FROM ENCODERS AND IMU
     delta_theta_enc = (s_R - s_L) / w # ENCODER DATA
-    ### INCORPORATE IMU DATA
     dt_imu = np.diff(imu_ts, prepend=imu_ts[0])
-    delta_theta_imu = gyro_z * dt_imu
-    theta_imu = integrate(0, delta_theta_imu)
-    theta_imu_on_enc = np.interp(enc_ts, imu_ts, theta_imu)
-    delta_theta_imu_on_enc = np.diff(theta_imu_on_enc, prepend=theta_imu_on_enc[0])
-
-    print(f"imu: {delta_theta_imu_on_enc[::1000]}, encoder: {delta_theta_enc[::1000]}")
+    delta_theta_imu = gyro_z * dt_imu # IMU DATA
+    delta_theta_imu_on_enc = np.interp(enc_ts, imu_ts, delta_theta_imu) # interpolated onto enc_ts
 
     ## FUSE ROTATION DELTAS
+    alpha = 0.50 # trust imu more than encoders since its skid-steer
     delta_theta_fused_enc = alpha * delta_theta_imu_on_enc + (1 - alpha) * delta_theta_enc
 
     ## Approximate Forward Movement (Y_BODY)
@@ -150,7 +146,7 @@ def compute_body_frame_odometry_at_lidar_times(encoder_path, imu_path, lidar_pat
     ## DIFFERENCE AT LIDAR TIMES in METERS
     delta_y_body_at_lidar = np.diff(y_body_lidar, prepend=y_body_lidar[0]) / 1000
     delta_x_body_at_lidar = np.diff(x_body_lidar, prepend=x_body_lidar[0]) / 1000
-    delta_theta_at_lidar = np.diff(theta_lidar, prepend=theta_lidar[0])
+    delta_theta_at_lidar = np.diff(theta_lidar, prepend=theta_lidar[0]) / 1000
 
     return delta_y_body_at_lidar, delta_x_body_at_lidar, delta_theta_at_lidar, lidar_ts
 

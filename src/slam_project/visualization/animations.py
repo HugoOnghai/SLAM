@@ -85,7 +85,7 @@ def animate_occupancy_grid(fig, ax, lidar, X, Y, theta, t, scale=0.1, world_boun
 
         image.set_data(grid.grid)
         ax.plot()
-        ax.set_title(f"Scan {i}: Current Robot Position ({X[i]}, {Y[i]}) ({rx_grid}, {ry_grid})")
+        ax.set_title(f"Scan {i}: Current Robot Position ({X[i]:.2f}, {Y[i]:.2f})")
         plt.draw()
         plt.pause(0.01)
 

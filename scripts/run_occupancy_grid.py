@@ -5,12 +5,14 @@ from slam_project.io import load_data as ld
 import matplotlib.pyplot as plt
 from slam_project.visualization import animations as anim
 
-WORLD_BOUNDS = (-10, 25)  # meters
+WORLD_BOUNDS = (-10, 30)  # meters
 SCALE = 0.1  # meters per box
 SCAN_IDX = 0
 
-X, Y, theta, t = od.parse_encoders_IMU('./data/train/Encoders20', './data/train/imu20')
-lidar = ld.get_lidar('./data/train/Hokuyo20')
+room_name = "23"
+X, Y, theta, t = od.parse_encoders_IMU(f'./data/train/Encoders{room_name}', f'./data/train/imu{room_name}')
+lidar = ld.get_lidar(f'./data/train/Hokuyo{room_name}')
+
 
 # grid = occupancy_grid(0, 0, SCALE, WORLD_BOUNDS)
 # i = mp.nearest_pose_index(lidar[0]['t'], t)
@@ -20,6 +22,11 @@ lidar = ld.get_lidar('./data/train/Hokuyo20')
 
 fig, ax = plt.subplots(figsize=(8, 8))
 
-anim.animate_occupancy_grid(fig, ax, lidar, X, Y, theta, t, scale=0.1, world_bounds=WORLD_BOUNDS)
+my_scale = 0.1
+anim.animate_occupancy_grid(fig, ax, lidar, X, Y, theta, t, scale=my_scale, world_bounds=WORLD_BOUNDS)
+ax.set_title(f"Occupancy Grid for {room_name}")
+fig.tight_layout()
 
-fig.savefig("./outputs/figures/occupancygrid_nonSLAM.png")
+file_name = f"./outputs/figures/occupancygrid_nonSLAM_Train{room_name}.png"
+fig.savefig(file_name)
+print(f"Output saved to: {file_name}")

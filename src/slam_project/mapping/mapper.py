@@ -9,10 +9,10 @@ def nearest_pose_index(scan_time, odometry_timestamps):
 	return np.argmin(latency)
 
 
-def lidar_hits_global(lidar_snapshot, x, y, theta):
+def lidar_hits_global(lidar_snapshot, x, y, theta, res=10):
 	# converts angles+distances to global xy-coords
-	angles = np.asarray(lidar_snapshot['angle']).ravel()
-	distances = np.asarray(lidar_snapshot['scan']).ravel() # in meters!
+	angles = np.asarray(lidar_snapshot['angle'][::res]).ravel()
+	distances = np.asarray(lidar_snapshot['scan'][::res]).ravel() # in meters!
 
 	valid_hits = np.isfinite(distances) & (distances >= config.LIDAR_MIN_RANGE) & (distances <= config.LIDAR_MAX_RANGE)
 	angles = angles[valid_hits]

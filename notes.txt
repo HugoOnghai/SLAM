@@ -1,0 +1,29 @@
+Here are my notes for brainstorming how to implement SLAM.
+
+Initialization
+1. Initialize an array of N particles, which will take len(lidar_timestamps) steps of odometry (interpolated from encoders/IMU)
+    - particles[N x 3] array where particles[0] denotes the (x, y, theta_heading) of the 0th particle.
+1. Initialize weights of each particle.
+    - weights[N] array where weights[0] denotes the weighting/strength/importance of the 0th particle.
+
+Odometry Step
+2. Iterate the positions and heading directions of all particles based on the integrated encoder ticks and IMU data.
+    - I will apply the same odometry step to every particle for now, since I will initialize them with some position and heading direction noise already.
+
+Occupancy Grid
+3. Build an occupancy grid with by superimposing the current LIDAR scan on all of the particles.
+    - Increase the log-odds of any hits across all scans and particles
+    - Decrease the log-odds of any free spaces across all scans and particles
+
+Weight Update
+4. w_new = w_old * sum(log-odds of all hit points).
+    - when hits don't match log-odds, the weight will be significantly decreased
+4. Normalize all weights s.t. they sum to one.
+
+Particle Filter (Survival of the Fittest Particle)
+5. If w_new < some minimum weight, remove it from the roster
+5. Replace it with a new particle
+    - in theory, I should initialize it with some weighted sum of the positions or something.
+    - for now, I'll probably just sample it randomly.
+
+
