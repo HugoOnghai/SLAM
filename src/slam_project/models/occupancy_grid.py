@@ -20,11 +20,15 @@ class occupancy_grid:
         self.fig, self.ax = plt.subplots()
         self.im = self.ax.imshow(self.grid, origin="lower")
         self.fig.colorbar(self.im, ax=self.ax)
-        
+        self.robot_x_array = []
+        self.robot_y_array = []
+
         if robot_x is None or robot_y is None:
             self.robot_marker = self.ax.scatter([], [], c="red", s=80, marker="x")
         else:
             self.robot_marker = self.ax.scatter([robot_x], [robot_y], c="red", s=80, marker="x")
+            self.robot_x_array.append(robot_x)
+            self.robot_y_array.append(robot_y)
 
         self.ax.set_title(f"{self.name} with SLAM")
 
@@ -50,10 +54,20 @@ class occupancy_grid:
         robot_x_grid = np.floor((robot_x_meters - self.origin_x) / self.scale).astype(int) + origin_x_grid
         robot_y_grid = np.floor((robot_y_meters - self.origin_y) / self.scale).astype(int) + origin_y_grid
 
+        self.robot_y_array.append(robot_y_grid)
+        self.robot_x_array.append(robot_x_grid)
+
         self.im.set_data(self.grid)
         self.robot_marker.set_offsets([[robot_x_grid, robot_y_grid]])
+
         self.ax.figure.canvas.draw_idle()
         plt.pause(0.0001)
+
+    def add_traj_live_plot(self, filename):
+        self.ax.plot(self.robot_x_array, self.robot_y_array, color="green")
+        plt.savefig(filename)
+        # plt.pause(100)
+        plt.show()
 
     def plot(self):
         # alternative to live map where u just call it easily

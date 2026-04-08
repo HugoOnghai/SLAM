@@ -127,8 +127,6 @@ def compute_body_frame_odometry_at_lidar_times(encoder_path, imu_path, lidar_pat
     theta_imu_on_enc = np.interp(enc_ts, imu_ts, theta_imu)
     delta_theta_imu_on_enc = np.diff(theta_imu_on_enc, prepend=theta_imu_on_enc[0])
 
-    print(f"imu: {delta_theta_imu_on_enc[::1000]}, encoder: {delta_theta_enc[::1000]}")
-
     ## FUSE ROTATION DELTAS
     delta_theta_fused_enc = alpha * delta_theta_imu_on_enc + (1 - alpha) * delta_theta_enc
 

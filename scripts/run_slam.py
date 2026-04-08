@@ -6,8 +6,8 @@ from slam_project.localization import odometry as od
 from slam_project.io import load_data as ld
 
 # Noise Parameters
-movement_noise = 0.1
-angle_noise = 0.1
+movement_noise = 0.025
+angle_noise = 0.05
 
 # Initialization (num_particles x (x,y,theta))
 num_particles = 100
@@ -18,7 +18,7 @@ particles[:, 2] = np.random.normal(0, angle_noise, num_particles)
 weights = np.ones(num_particles) * (1/num_particles)
 
 # Odometry Step
-room_name = '20'
+room_name = '23'
 enc_path = f'./data/train/Encoders{room_name}'
 imu_path = f'./data/train/imu{room_name}'
 lidar_path = f'./data/train/Hokuyo{room_name}'
@@ -39,6 +39,9 @@ best_trajectory = []
 num_scan = len(lidar)
 best_grid.init_live_plot()
 for idx, scan in enumerate(lidar):
+    # if (idx % 3 == 0):
+    #     continue
+    
     d_forward = delta_forward[idx]
     d_perp = delta_perp[idx]
     dtheta = delta_theta[idx]
@@ -46,8 +49,7 @@ for idx, scan in enumerate(lidar):
     particle_hits = []
     best_particle = particles[0]
 
-    if (idx % 10 == 0):
-        print(f"Now on scan {(100 * idx / num_scan):.2f}% at {scan['t']}.")
+    if (idx % 25 == 0):
         best_grid.update_live_plot(best_particle[0], best_particle[1])
 
     for p, particle in enumerate(particles):
@@ -67,7 +69,7 @@ for idx, scan in enumerate(lidar):
             particle[0],
             particle[1],
             particle[2],
-            res=10
+            res=1
         )
         ox_grid, oy_grid = best_grid.hits_to_grid_cells(ox, oy)
         miss_x_grid, miss_y_grid = best_grid.miss_to_grid_cells(ox_grid, oy_grid, particle[0], particle[1])
@@ -118,14 +120,15 @@ for idx, scan in enumerate(lidar):
 # fig, ax = plt.subplots()
 # best_grid.plot(fig, ax, None, None)
 best_trajectory = np.asarray(best_trajectory)
+best_grid.add_traj_live_plot(f"./outputs/figures/SLAM_map_{room_name}")
 
-plt.figure()
-plt.plot(best_trajectory[:, 0], best_trajectory[:, 1], label="Best particle")
-plt.scatter(best_trajectory[0, 0], best_trajectory[0, 1], c="green", label="start")
-plt.scatter(best_trajectory[-1, 0], best_trajectory[-1, 1], c="red", label="end")
-plt.axis("equal")
-plt.xlabel("x (m)")
-plt.ylabel("y (m)")
-plt.title(f"Best Particle Trajectory: Room {room_name}")
-plt.legend()
-plt.show()
+# plt.figure()
+# plt.plot(best_trajectory[:, 0], best_trajectory[:, 1], label="Best particle")
+# plt.scatter(best_trajectory[0, 0], best_trajectory[0, 1], c="green", label="start")
+# plt.scatter(best_trajectory[-1, 0], best_trajectory[-1, 1], c="red", label="end")
+# plt.axis("equal")
+# plt.xlabel("x (m)")
+# plt.ylabel("y (m)")
+# plt.title(f"Best Particle Trajectory: Room {room_name}")
+# plt.legend()
+# plt.show()
