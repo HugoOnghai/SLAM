@@ -31,11 +31,11 @@ def replay_lidar(lidar_data):
 
 # this is just a test to make sure that this loading function doesn't error
 # the results aren't used anywhere
-acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z, imu_ts	 = ld.get_imu('./data/train/imu20')
+acc_x, acc_y, acc_z, gyro_x, gyro_y, gyro_z, imu_ts	 = ld.get_imu('./data/imu20')
 # this is just a test to make sure that this loading function doesn't error
 # the results aren't used anywhere
-FL, FR, RL, RR, enc_ts = ld.get_encoder('./data/train/Encoders20')
+FL, FR, RL, RR, enc_ts = ld.get_encoder('./data/Encoders20')
 
 # load and display plots of the lidar data (robot fixed in center, walls moving around robot)
-lidar = ld.get_lidar('./data/train/Hokuyo20')
+lidar = ld.get_lidar('./data/Hokuyo20')
 replay_lidar(lidar)

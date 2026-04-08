@@ -10,7 +10,7 @@ wheels/
 .venv
 
 # data (DO NOT SUBMIT)
-data/train/
+data/
 data/test/
 
 # environments

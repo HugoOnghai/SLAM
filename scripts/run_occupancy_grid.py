@@ -10,8 +10,8 @@ SCALE = 0.1  # meters per box
 SCAN_IDX = 0
 
 room_name = "23"
-X, Y, theta, t = od.parse_encoders_IMU(f'./data/train/Encoders{room_name}', f'./data/train/imu{room_name}')
-lidar = ld.get_lidar(f'./data/train/Hokuyo{room_name}')
+X, Y, theta, t = od.parse_encoders_IMU(f'./data/Encoders{room_name}', f'./data/imu{room_name}')
+lidar = ld.get_lidar(f'./data/Hokuyo{room_name}')
 
 
 # grid = occupancy_grid(0, 0, SCALE, WORLD_BOUNDS)
