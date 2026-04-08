@@ -29,7 +29,7 @@ def slam(room_name):
 
     lidar = ld.get_lidar(lidar_path)
 
-    best_grid = occupancy_grid(0, 0, 0.1, (-20,40), f"Room {room_name}")
+    best_grid = occupancy_grid(0, 0, 0.1, (-25,35), f"Room {room_name}")
     best_trajectory = []
 
     # For each lidar scan:
@@ -40,8 +40,6 @@ def slam(room_name):
     num_scan = len(lidar)
     best_grid.init_live_plot()
     for idx, scan in enumerate(lidar):
-        # if (idx % 3 == 0):
-        #     continue
         
         d_forward = delta_forward[idx]
         d_perp = delta_perp[idx]
@@ -70,7 +68,7 @@ def slam(room_name):
                 particle[0],
                 particle[1],
                 particle[2],
-                res=1
+                res=5
             )
             ox_grid, oy_grid = best_grid.hits_to_grid_cells(ox, oy)
             miss_x_grid, miss_y_grid = best_grid.miss_to_grid_cells(ox_grid, oy_grid, particle[0], particle[1])

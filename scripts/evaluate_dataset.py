@@ -2,6 +2,7 @@ from run_slam import slam
 
 def main():
 
+    # To run just 24, room_names = ["24"]
     room_names = ["20", "21", "22", "23", "24"]
 
     for room_name in room_names:

@@ -57,7 +57,7 @@ The project is organized into clear, modular sections:
 Like the previous project, this uses UV for dependency management. After cloning the repository, set up and run:
 
 ```bash
-uv run ./scripts/run_slam.py
+uv run ./scripts/evaluate_dataset.py
 ```
 
-This loads sensor data from the training set and executes the full SLAM pipeline for a single room, then generates visualizations in `outputs/`.
+This loads sensor data from the training set and executes the full SLAM pipeline for a single room, then generates visualizations in `outputs/`. Note that if you have existing output figures already, they will get overwritten!
